@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import random
 load_dotenv()
 TOKEN=os.getenv('TK')
+
 import pymongo
 
 try:
@@ -13,8 +14,12 @@ try:
     client = pymongo.MongoClient("mongodb+srv://onlyplayxerath:iEEzRNyrBjaPPfTt@cluster0.00l13mt.mongodb.net/?retryWrites=true&w=majority")
     # select or create
     db = client["training-python"]
-
     collection= db["users"]
+    user={
+        "name":"Tan",
+        "age":30,
+    }
+    print(f"new user added with id: {collection.insert_one(user).inserted_id}")
     print("connected to mongo")
 except Exception as e:
     print(e)
