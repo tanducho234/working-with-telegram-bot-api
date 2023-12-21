@@ -15,16 +15,14 @@ try:
     # select or create
     db = client["training-python"]
     collection= db["users"]
-    user={
-        "name":"Tan",
-        "age":30,
-    }
-    print(f"new user added with id: {collection.insert_one(user).inserted_id}")
+    # user={
+    #     "name":"Tan",
+    #     "age":30,
+    # }
+    # print(f"new user added with id: {collection.insert_one(user).inserted_id}")
     print("connected to mongo")
 except Exception as e:
     print(e)
-
-
 
 
 
@@ -38,13 +36,26 @@ async def dice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     # print(update.message.from_user.language_code)
     
-
+async def add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    text=update.message.text[4:]
+    word_list = text.split()
+    name=word_list[0]
+    age=word_list[1]
+    newuser={
+        'name':name,
+        'age':age,
+    }
+    
+    await update.message.reply_text(f"new user added with id: {collection.insert_one(newuser).inserted_id}",
+                                    reply_to_message_id=update.message.id,protect_content=True
+                                    )
+    
 
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("hello", hello))
 app.add_handler(CommandHandler("dice", dice))
-
+app.add_handler(CommandHandler("add", add))
 
 print("polling")
 app.run_polling()
