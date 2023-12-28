@@ -45,13 +45,23 @@ async def add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                                     reply_to_message_id=update.message.id,protect_content=True
                                     )
 
+import re
 def search_name_with_keyword(keyword):
-    result = collection.find_one({'name': keyword})
-    return result
+    regex_pattern = re.compile(f'.*{re.escape(keyword)}.*', re.IGNORECASE)
+    result = collection.find({'name': {'$regex': regex_pattern}})
+    return list(result)
+
+
+import json
 
 async def message_handle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text=update.message.text
-    await update.message.reply_text(f"{search_name_with_keyword(text)}")
+    datas = search_name_with_keyword(text)
+    result=""
+    for data in datas:
+        result+=f"{data}\n"
+        # result+=data['name']+ " - " + str(data['age'])+"\n"
+    await update.message.reply_text(f"{result}"if result!="" else "Nothing was found")
 
 
 
