@@ -3,7 +3,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes,Messag
 from telegram.constants import DiceEmoji
 import os
 from dotenv import load_dotenv
-import random
+
 load_dotenv()
 TOKEN=os.getenv('TK')
 
@@ -19,19 +19,26 @@ try:
 except Exception as e:
     print(e)
 
-
+def write_to_file(text:str):
+    with open("log.txt",'a') as f:
+        print(text,file=f)
 
 async def hello(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    write_to_file(f"{update.effective_user.first_name} : {update.message.text}")
     await update.message.reply_text(f'Hello {update.effective_user.first_name}')
 
 async def dice(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # print(update.to_json())
+    write_to_file(f"{update.effective_user.first_name} : {update.message.text}")
+
     await update.message.reply_dice(emoji=DiceEmoji.DICE,write_timeout=5000)
     await update.message.reply_dice(emoji=DiceEmoji.BOWLING,write_timeout=5000)
 
     # print(update.message.from_user.language_code)
     
 async def add(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    write_to_file(f"{update.effective_user.first_name} : {update.message.text}")
+
     text=update.message.text[4:]
     word_list = text.split()
     name=word_list[0]
