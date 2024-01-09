@@ -73,16 +73,42 @@ async def message_handle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 import requests
 ACCESS_KEY="aMv_Q4oxdTHal72lS32lF4FOWmq6ZwVr0bu7LLh7OSw"
-API_ADDRESS=f'https://api.unsplash.com/photos/random?client_id={ACCESS_KEY}'
+API_ADDRESS_RANDOM=f'https://api.unsplash.com/photos/random?client_id={ACCESS_KEY}'
 
 async def random_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    response=requests.get(API_ADDRESS)
+    response=requests.get(API_ADDRESS_RANDOM)
     if response.status_code==200:
         image_url=response.json().get('urls',{}).get('regular')
         await update.message.reply_photo(photo=image_url,caption="Random Image from Unsplash")
     else:
         await update.message.reply_text("Something went wrong")
 
+API_ADDRESS_SEARCH=f'https://api.unsplash.com/search/photos?client_id={ACCESS_KEY}&query='
+
+async def search_images(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    response=requests.get(API_ADDRESS_SEARCH)
+    keyword=update.message.text[14:]
+    print(keyword)
+    if not keyword:
+        await update.message.reply_text("Please enter a keyword")
+        return
+    else:
+        response=requests.get(API_ADDRESS_SEARCH+keyword)
+        if response.status_code==200:
+            search_results=response.json().get('results')[:4]
+            for photo_info in search_results:
+                image_url=photo_info.get('urls',{}).get('regular')
+                await update.message.reply_photo(photo=image_url)
+            # result=""
+            # for image in images:
+            #     result+=f"{image['urls']['regular']}\n"
+            # await update.message.reply_text(result)
+        else:
+            await update.message.reply_text("Something went wrong")
+
+
+
+    
 
 app = ApplicationBuilder().token(TOKEN).build()
 
@@ -90,6 +116,8 @@ app.add_handler(CommandHandler("hello", hello))
 app.add_handler(CommandHandler("dice", dice))
 app.add_handler(CommandHandler("add", add))
 app.add_handler(CommandHandler("randomimage", random_image))
+app.add_handler(CommandHandler("searchimages", search_images))
+
 
 app.add_handler(MessageHandler(filters.TEXT, message_handle))
 
