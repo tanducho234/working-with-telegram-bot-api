@@ -4,8 +4,8 @@
 
 - Python 3.x https://www.python.org/downloads/
 ```bash
-# Checking version of python
-$ python --version
+# install requests
+$ python -m pip install requests
 ```
 
 ### Installation

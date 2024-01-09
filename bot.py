@@ -71,6 +71,17 @@ async def message_handle(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     await update.message.reply_text(f"{result}"if result!="" else "Nothing was found")
 
 
+import requests
+ACCESS_KEY="aMv_Q4oxdTHal72lS32lF4FOWmq6ZwVr0bu7LLh7OSw"
+API_ADDRESS=f'https://api.unsplash.com/photos/random?client_id={ACCESS_KEY}'
+
+async def random_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    response=requests.get(API_ADDRESS)
+    if response.status_code==200:
+        image_url=response.json().get('urls',{}).get('regular')
+        await update.message.reply_photo(photo=image_url,caption="Random Image from Unsplash")
+    else:
+        await update.message.reply_text("Something went wrong")
 
 
 app = ApplicationBuilder().token(TOKEN).build()
@@ -78,6 +89,8 @@ app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("hello", hello))
 app.add_handler(CommandHandler("dice", dice))
 app.add_handler(CommandHandler("add", add))
+app.add_handler(CommandHandler("randomimage", random_image))
+
 app.add_handler(MessageHandler(filters.TEXT, message_handle))
 
 print("polling")
