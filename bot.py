@@ -4,6 +4,8 @@ from telegram.constants import DiceEmoji
 import os
 from dotenv import load_dotenv
 
+
+
 load_dotenv()
 TOKEN=os.getenv('TK')
 
@@ -79,7 +81,7 @@ async def random_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     response=requests.get(API_ADDRESS_RANDOM)
     if response.status_code==200:
         image_url=response.json().get('urls',{}).get('regular')
-        await update.message.reply_photo(photo=image_url,caption="Random Image from Unsplash")
+        await update.message.reply_photo(photo="image_url",caption="Random Image from Unsplash")
     else:
         await update.message.reply_text("Something went wrong")
 
@@ -108,7 +110,24 @@ async def search_images(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 
-    
+import requests
+from bs4 import BeautifulSoup    
+async def news(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    url="https://znews.vn/"
+    response=requests.get(url)
+    soup=BeautifulSoup(response.content,"html.parser")
+    for i in range(1,8):
+        element=soup.select_one(f"article:nth-child({i}) > header > p.article-title > a")
+        image_url=soup.select_one(f"#section-latest > section > div > article:nth-child({i}) > p > a > img").get("data-src")
+        caption=element.text
+        tempoUrl=element.get("href")
+        tempoResponse=requests.get(tempoUrl)
+        tempoSoup=BeautifulSoup(tempoResponse.content,"html.parser")
+
+        date=tempoSoup.select_one("li.the-article-publish").text
+        await update.message.reply_photo(photo=image_url,caption=caption+"\n"+date)
+
+
 
 app = ApplicationBuilder().token(TOKEN).build()
 
@@ -117,6 +136,8 @@ app.add_handler(CommandHandler("dice", dice))
 app.add_handler(CommandHandler("add", add))
 app.add_handler(CommandHandler("randomimage", random_image))
 app.add_handler(CommandHandler("searchimages", search_images))
+app.add_handler(CommandHandler("news", news))
+
 
 
 app.add_handler(MessageHandler(filters.TEXT, message_handle))
