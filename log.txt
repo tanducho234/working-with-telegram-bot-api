@@ -1,3 +1,5 @@
 TH : /dice
 TH : /dice
 TH : /dice
+TH : /add ngan 11
+TH : /add nganvui 12

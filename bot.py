@@ -81,7 +81,7 @@ async def random_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     response=requests.get(API_ADDRESS_RANDOM)
     if response.status_code==200:
         image_url=response.json().get('urls',{}).get('regular')
-        await update.message.reply_photo(photo="image_url",caption="Random Image from Unsplash")
+        await update.message.reply_photo(photo=image_url,caption="Random Image from Unsplash")
     else:
         await update.message.reply_text("Something went wrong")
 
